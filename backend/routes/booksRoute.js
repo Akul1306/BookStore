@@ -25,7 +25,7 @@ router.post('/books', async (request, response) => {      //post used for genera
         };
 
        const book = await Book.create(newBook);   //newBook is sent here for creation(adding to our data)
-       return response.status(201).send(book);    //send th e book stored as a response
+    //    return response.status(201).send(book);    //send th e book stored as a response
 
         // Send a success response
         return response.status(201).send({
@@ -57,16 +57,30 @@ router.get('/books/:id',async (request,response) => {
 
         const books = await Book.findById(id);     //check for that id
 
-        return response.status(200).json({    //returning response to the client
-            count : books.length,
-            data: books
-        })
+        return response.status(200).json(   books )   //returning response to the client
+            // count : books.length,
+       
     }
     catch(error){
         console.log(error.massage);
         return response.status(500).send({ message: error.message });
     }
 })
+// router.get('/books/:id', async (request, response) => {
+//   try {
+//     const { id } = request.params;
+//     const book = await Book.findById(id);
+
+//     if (!book) {
+//       return response.status(404).json({ message: 'Book not found' });
+//     }
+
+//     return response.status(200).json(book); // ✅ just the book object
+//   } catch (error) {
+//     console.log(error.message);
+//     return response.status(500).send({ message: error.message });
+//   }
+// });
 
 router.put('/books/:id', async(request,response)=> {
     try{
