@@ -1,55 +1,34 @@
-import express from "express";
- import {PORT, mongoDBURL} from "./config.js";
+import express from "express";    // for express package
+ import {PORT, mongoDBURL} from "./config.js";    // for Port from config.js
  import mongoose from "mongoose";
 import { Book } from "./models/bookModel.js";
+import booksRoute from './routes/booksRoute.js';
+import cors from 'cors';
 
  const app = express();
 
  //Middleware for parsing request body
- app.use(express.json());
+ app.use(express.json());    //it will allow express to use json body
+
+ //Middleware for handling cors policy
+ // 1: Allow all origins with default of cors(*)
+ app.use(cors());
+
+ //2: Allow custom origins
+//  app.use(cors({
+//     origin: 'http://localhost:3000',
+//     mathod: ['GET','POST','PUT','DELETE'],
+//     allowedHeaders: ['Content-type'],
+//  }));
 
  app.get('/',(request,response) => {
     console.log(request);
-    return response.status(234).send('Welcome to MERN stack');
+    return  response.status(234).send('Welcome to MERN stack');
  });
 
-// Route to save a new book
-app.post('/books', async (request, response) => {
-    try {
-        // Check if all required fields are present
-        if (
-            !request.body.title ||
-            !request.body.author ||
-            !request.body.publishYear
-        ) {
-            return response.status(400).send({
-                message: 'Send all required fields: title, author, publishYear',
-            });
-        }
+app.use('/',booksRoute);
 
-        // Create a new book object
-        const newBook = {
-            title: request.body.title,
-            author: request.body.author,
-            publishYear: request.body.publishYear,
-        };
-
-       const book = await Book.create(newBook);
-       return response.status(201).send(book);
-
-        // Send a success response
-        return response.status(201).send({
-            message: 'Book created successfully',
-            book: newBook,
-        });
-    } catch (error) {
-        console.log(error.message);
-        return response.status(500).send({ message: error.message });
-    }
-});
-
-
-mongoose.connect(mongoDBURL)
+mongoose.connect(mongoDBURL)      //mongoose.connect to connect to db on the mongo url
 .then(()=>{
 console.log('App connected to database');
 app.listen(PORT, () => {
